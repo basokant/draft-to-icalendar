@@ -1,8 +1,22 @@
-import renderContent from "../renderContent";
-import App from "./App.svelte";
+import browser from "webextension-polyfill";
+import type { BackgroundMessage } from "~/entries/background/main";
+import { getScheduleHandler, type GetScheduleResponse } from "./schedule";
 
-renderContent(import.meta.PLUGIN_WEB_EXT_CHUNK_CSS_PATHS, (appRoot) => {
-  new App({
-    target: appRoot,
-  });
-});
+export type ContentMessage =
+  | GetScheduleResponse
+  | {
+      type: string;
+    };
+
+export function sendMessage(message: ContentMessage) {
+  return chrome.runtime.sendMessage(message);
+}
+
+async function onBackgroundMessage(message: BackgroundMessage) {
+  switch (message.type) {
+    case "get_schedule":
+      await getScheduleHandler();
+  }
+}
+
+browser.runtime.onMessage.addListener(onBackgroundMessage);
