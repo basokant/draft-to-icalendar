@@ -1,9 +1,9 @@
 {
-  "name": "vite-web-extension",
+  "name": "draft-to-icalendar",
   "version": "1.0.0",
-  "displayName": "Vite Web Extension",
-  "author": "@samrum/vite-plugin-web-extension",
-  "description": "A @samrum/vite-plugin-web-extension web extension",
+  "displayName": "UWO Draft to iCalendar",
+  "author": "Benjamin Asokanthan",
+  "description": "A web extension for exporting a Western University DraftMySchedule Schedule to an iCalendar file",
   "type": "module",
   "scripts": {
     "build": "vite build",
