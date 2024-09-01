@@ -4,7 +4,7 @@ const sharedManifest: Partial<chrome.runtime.ManifestBase> = {
   content_scripts: [
     {
       js: ["src/entries/contentScript/primary/main.ts"],
-      matches: ["*://*/*"],
+      matches: ["https://draftmyschedule.uwo.ca/secure/current_timetable.cfm"],
     },
   ],
   icons: {
@@ -23,7 +23,7 @@ const sharedManifest: Partial<chrome.runtime.ManifestBase> = {
     page: "src/entries/options/index.html",
     open_in_tab: true,
   },
-  permissions: [],
+  permissions: ["contextMenus"],
 };
 
 const browserAction = {
@@ -59,7 +59,9 @@ const ManifestV3 = {
   host_permissions: ["*://*/*"],
 };
 
-export function getManifest(manifestVersion: number): chrome.runtime.ManifestV2 | chrome.runtime.ManifestV3 {
+export function getManifest(
+  manifestVersion: number,
+): chrome.runtime.ManifestV2 | chrome.runtime.ManifestV3 {
   const manifest = {
     author: pkg.author,
     description: pkg.description,
@@ -84,6 +86,6 @@ export function getManifest(manifestVersion: number): chrome.runtime.ManifestV2 
   }
 
   throw new Error(
-    `Missing manifest definition for manifestVersion ${manifestVersion}`
+    `Missing manifest definition for manifestVersion ${manifestVersion}`,
   );
 }
