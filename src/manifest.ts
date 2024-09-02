@@ -3,7 +3,7 @@ import pkg from "../package.json";
 const sharedManifest: Partial<chrome.runtime.ManifestBase> = {
   content_scripts: [
     {
-      js: ["src/entries/contentScript/primary/main.ts"],
+      js: ["src/entries/content-script/primary/main.ts"],
       matches: ["https://draftmyschedule.uwo.ca/secure/current_timetable.cfm"],
     },
   ],

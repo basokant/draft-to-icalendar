@@ -1,7 +1,8 @@
 import browser from "webextension-polyfill";
-import { sendMessage, type BackgroundMessage } from "./main";
+import { sendBackgroundMessage, type BackgroundMessage } from "./main";
+import type { GetScheduleResponse } from "../content-script/primary/draft-schedule";
 
-export async function requestSchedule() {
+export async function sendGetScheduleRequest() {
   const activeTabId = await browser.tabs
     .query({
       currentWindow: true,
@@ -16,7 +17,11 @@ export async function requestSchedule() {
   }
 
   console.info(`requesting schedule from tab ${activeTabId}`);
-  await sendMessage(activeTabId, {
+  await sendBackgroundMessage(activeTabId, {
     type: "get_schedule",
   });
+}
+
+export function getScheduleResponseHandler(message: GetScheduleResponse) {
+  console.log({ message });
 }

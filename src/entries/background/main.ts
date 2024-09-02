@@ -1,17 +1,30 @@
 import browser from "webextension-polyfill";
-import { requestSchedule } from "./schedule";
+import { sendGetScheduleRequest, getScheduleResponseHandler } from "./schedule";
+import type { ContentMessage } from "../content-script/primary/main";
 
 export type BackgroundMessage = {
   type: "get_schedule";
 };
 
-export function sendMessage(tabId: number, message: BackgroundMessage) {
+export function sendBackgroundMessage(
+  tabId: number,
+  message: BackgroundMessage,
+) {
   return browser.tabs.sendMessage(tabId, message);
 }
 
 browser.runtime.onInstalled.addListener(() => {
   console.log("Draft to Calendar installed");
 });
+
+function onContentMessage(message: ContentMessage) {
+  switch (message.type) {
+    case "get_schedule":
+      getScheduleResponseHandler(message);
+  }
+}
+
+browser.runtime.onMessage.addListener(onContentMessage);
 
 browser.contextMenus.create({
   id: "draft-to-calendar",
@@ -23,6 +36,6 @@ browser.contextMenus.create({
 
 browser.contextMenus.onClicked.addListener(async (info, _) => {
   if (info.menuItemId === "draft-to-calendar") {
-    await requestSchedule();
+    await sendGetScheduleRequest();
   }
 });
