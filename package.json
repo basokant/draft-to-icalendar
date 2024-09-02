@@ -29,6 +29,8 @@
     "web-ext": "^7.8.0"
   },
   "dependencies": {
+    "date-fns": "^3.6.0",
+    "ical-generator": "^8.0.0",
     "webextension-polyfill": "^0.10.0"
   }
 }
