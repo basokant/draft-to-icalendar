@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { sendBackgroundMessage, type BackgroundMessage } from "./main";
+import { sendBackgroundMessage } from "./main";
 import type { GetScheduleResponse } from "../content-script/primary/draft-schedule";
 
 export async function sendGetScheduleRequest() {
