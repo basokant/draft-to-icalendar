@@ -276,14 +276,23 @@ function getYear() {
   const termSelectElement = document.querySelector<HTMLSelectElement>(
     "select#CurrentTimeTableDisplay",
   );
+
+  const term =
+    Array.from(termSelectElement?.selectedOptions ?? []).at(
+      termSelectElement?.selectedIndex ?? 0,
+    )?.innerText ?? "";
+  const year = Number(term?.trim().split(" ").at(-1));
+
+  return year;
 }
 
 function getSchedule(): DraftSchedule {
   const classes = getClasses();
-  console.log({ classes });
+  const year = getYear();
+  console.log({ classes, year });
 
   return {
     classes: classes,
-    year: 2024,
+    year: year,
   };
 }
