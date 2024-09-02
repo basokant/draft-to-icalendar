@@ -1,6 +1,10 @@
 import browser from "webextension-polyfill";
 import { sendBackgroundMessage } from "./main";
-import type { GetScheduleResponse } from "../content-script/primary/draft-schedule";
+import type { GetScheduleResponse } from "../content-script/primary/draft-my-schedule";
+import * as WesternDates from "../../constants/western-dates";
+import { parse } from "date-fns/parse";
+
+const DATE_FORMAT = "MMMM dd, yyyy";
 
 export async function sendGetScheduleRequest() {
   const activeTabId = await browser.tabs
@@ -22,6 +26,25 @@ export async function sendGetScheduleRequest() {
   });
 }
 
-export function getScheduleResponseHandler(message: GetScheduleResponse) {
-  console.log({ message });
+export function getScheduleResponseHandler(response: GetScheduleResponse) {
+  const schedule = response.schedule;
+  console.log({ schedule });
+
+  const startOfFallSem = parse(
+    WesternDates.START_OF_FALL_SEM,
+    DATE_FORMAT,
+    new Date(),
+  );
+
+  const startOfFallReadingWeek = parse(
+    WesternDates.START_OF_FALL_READING_WEEK,
+    DATE_FORMAT,
+    new Date(),
+  );
+
+  const endOfFallSem = parse(
+    WesternDates.END_OF_FALL_SEM,
+    DATE_FORMAT,
+    new Date(),
+  );
 }

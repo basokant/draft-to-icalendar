@@ -24,11 +24,11 @@ export const classDelivery = ["In Person", "Distance Studies/Online"] as const;
 export type ClassDelivery = (typeof classDelivery)[number];
 
 export const dayOfWeek = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
 ] as const;
 export type DayOfWeek = (typeof dayOfWeek)[number];
 
@@ -216,11 +216,11 @@ function getClassTimes(cell: HTMLTableCellElement | undefined): ClassTime[] {
 
 function getClassTime(row: HTMLTableRowElement): ClassTime {
   const shortDayToDay: Record<ShortDayOfWeek, DayOfWeek> = {
-    M: "monday",
-    Tu: "tuesday",
-    W: "wednesday",
-    Th: "thursday",
-    F: "friday",
+    M: "Monday",
+    Tu: "Tuesday",
+    W: "Wednesday",
+    Th: "Thursday",
+    F: "Friday",
   };
 
   const classTimeCells = Array.from(row.querySelectorAll("td"));
