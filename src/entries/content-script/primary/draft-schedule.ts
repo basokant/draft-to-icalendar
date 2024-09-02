@@ -1,6 +1,14 @@
 import { camelize, isAlpha } from "~/lib/utils";
 import { sendContentMessage } from "./main";
 
+export function getScheduleHandler() {
+  const schedule = getSchedule();
+  return sendContentMessage({
+    type: "get_schedule",
+    schedule,
+  });
+}
+
 export type DraftSchedule = {
   classes: Class[];
   year: number;
@@ -57,14 +65,6 @@ export type GetScheduleResponse = {
   type: "get_schedule";
   schedule: DraftSchedule;
 };
-
-export function getScheduleHandler() {
-  const schedule = getSchedule();
-  return sendContentMessage({
-    type: "get_schedule",
-    schedule,
-  });
-}
 
 function getHeadings() {
   const headingRow = document.querySelector(
