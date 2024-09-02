@@ -24,6 +24,8 @@ export const dayOfWeek = [
 ] as const;
 export type DayOfWeek = (typeof dayOfWeek)[number];
 
+type ShortDayOfWeek = "M" | "Tu" | "W" | "Th" | "F";
+
 export type ClassTime = {
   /** days in which this class time occurs in the week (from monday to friday) */
   days: DayOfWeek[];
@@ -114,11 +116,11 @@ function getClass(
   ) as HTMLTableCellElement[];
 
   const subjectCol = classPropToCol.get("subject");
-  const subject = subjectCol ? classCells[subjectCol].innerText : "";
+  const subject = subjectCol ? (classCells[subjectCol]?.innerText ?? "") : "";
 
   const courseNumberCol = classPropToCol.get("courseNumber");
   const courseNumber = courseNumberCol
-    ? classCells[courseNumberCol].innerText
+    ? (classCells[courseNumberCol]?.innerText ?? "")
     : "";
 
   const componentCol = classPropToCol.get("component");
@@ -127,15 +129,15 @@ function getClass(
     : "Lecture";
 
   const sectionCol = classPropToCol.get("section");
-  const section = sectionCol ? classCells[sectionCol].innerText : "";
+  const section = sectionCol ? (classCells[sectionCol]?.innerText ?? "") : "";
 
   const descriptionCol = classPropToCol.get("description");
   const description = descriptionCol
-    ? classCells[descriptionCol].innerText
+    ? (classCells[descriptionCol]?.innerText ?? "")
     : "";
 
   const classNbrCol = classPropToCol.get("classNbr");
-  const classNbr = classNbrCol ? Number(classCells[classNbrCol].innerText) : 0;
+  const classNbr = classNbrCol ? Number(classCells[classNbrCol]?.innerText) : 0;
 
   const instructorCol = classPropToCol.get("instructor");
   const instructor = instructorCol
@@ -144,12 +146,12 @@ function getClass(
 
   const daysTimesLocationCol = classPropToCol.get("daysTimesLocation");
   const daysTimesLocation: ClassTime[] = daysTimesLocationCol
-    ? getTimes(classCells[daysTimesLocationCol])
+    ? getClassTimes(classCells[daysTimesLocationCol])
     : [];
 
   const creditUnitsCol = classPropToCol.get("creditUnits");
   const creditUnits = creditUnitsCol
-    ? Number(classCells[creditUnitsCol].innerText)
+    ? Number(classCells[creditUnitsCol]?.innerText ?? 0.0)
     : 0.0;
 
   const deliveryCol = classPropToCol.get("deliveryType");
@@ -174,8 +176,8 @@ function getClass(
   };
 }
 
-function getComponent(cell: HTMLTableCellElement): ClassComponent {
-  const component = cell.innerText.toLowerCase();
+function getComponent(cell: HTMLTableCellElement | undefined): ClassComponent {
+  const component = cell?.innerText.toLowerCase();
   switch (component) {
     case "lab":
       return "Lab";
@@ -186,17 +188,66 @@ function getComponent(cell: HTMLTableCellElement): ClassComponent {
   }
 }
 
-function getInstructor(cell: HTMLTableCellElement): string | null {
-  return cell.innerText ?? null;
+function getInstructor(cell: HTMLTableCellElement | undefined): string | null {
+  return cell?.innerText ?? null;
 }
 
-//TODO: implement function
-function getTimes(cell: HTMLTableCellElement): ClassTime[] {
-  return [];
+function getClassTimes(cell: HTMLTableCellElement | undefined): ClassTime[] {
+  if (cell === undefined) {
+    return [];
+  }
+
+  const classTimeRows = Array.from(
+    cell.querySelectorAll("table > tbody > tr"),
+  ) as HTMLTableRowElement[];
+
+  const hasEmptyFirstCell = !classTimeRows
+    .at(0)
+    ?.querySelector("td")
+    ?.innerText.trim();
+
+  if (classTimeRows.length <= 1 && hasEmptyFirstCell) {
+    return [];
+  }
+
+  const classTimes: ClassTime[] = classTimeRows.map(getClassTime);
+  return classTimes;
 }
 
-function getDeliveryType(cell: HTMLTableCellElement): ClassDelivery {
-  const deliveryType = cell.innerText.toLowerCase();
+function getClassTime(row: HTMLTableRowElement): ClassTime {
+  const shortDayToDay: Record<ShortDayOfWeek, DayOfWeek> = {
+    M: "monday",
+    Tu: "tuesday",
+    W: "wednesday",
+    Th: "thursday",
+    F: "friday",
+  };
+
+  const classTimeCells = Array.from(row.querySelectorAll("td"));
+
+  const shortDays = classTimeCells[0]?.innerText
+    .replace(/\s/g, "")
+    ?.split("") as ShortDayOfWeek[] | undefined;
+  const days: DayOfWeek[] =
+    shortDays?.map((day: ShortDayOfWeek) => shortDayToDay[day]) ?? [];
+
+  const times = classTimeCells[1]?.innerText.trim().split(" - ") ?? [];
+  const startTime = times[0] ?? "";
+  const endTime = times[1] ?? "";
+  const location = classTimeCells[2]?.innerText ?? null;
+
+  return {
+    days,
+    location,
+    startTime,
+    endTime,
+  };
+}
+
+function getDeliveryType(
+  cell: HTMLTableCellElement | undefined,
+): ClassDelivery {
+  const deliveryType = cell?.innerText.toLowerCase();
   if (deliveryType === "In Person") {
     return deliveryType;
   }
