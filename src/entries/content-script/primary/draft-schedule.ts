@@ -1,4 +1,4 @@
-import { camelize } from "~/lib/utils";
+import { camelize, isAlpha } from "~/lib/utils";
 import { sendContentMessage } from "./main";
 
 export type DraftSchedule = {
@@ -254,9 +254,22 @@ function getDeliveryType(
   return "Distance Studies/Online";
 }
 
-// TODO: implement function
 function getClassSession(courseNumber: string): ClassSession {
-  return "Fall";
+  const suffix = courseNumber.at(-1);
+  if (!suffix || !isAlpha(suffix)) {
+    return "Full Year";
+  }
+
+  switch (suffix) {
+    case "A":
+    case "F":
+      return "Fall";
+    case "B":
+    case "G":
+      return "Winter";
+    default:
+      return "Full Year";
+  }
 }
 
 function getSchedule(): DraftSchedule {

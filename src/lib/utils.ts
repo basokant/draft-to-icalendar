@@ -4,3 +4,9 @@ export function camelize(str: string) {
     return index === 0 ? match.toLowerCase() : match.toUpperCase();
   });
 }
+
+export function isAlpha(str: string) {
+  const alphaRegex = /^[a-zA-Z]+$/;
+
+  return alphaRegex.test(str);
+}
