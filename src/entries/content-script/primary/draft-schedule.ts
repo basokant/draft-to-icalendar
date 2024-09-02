@@ -96,9 +96,9 @@ function getClasses(): Class[] {
   const classPropToColMap = getClassPropertyToColMap(headings);
 
   const classTableRows = Array.from(
-    document.querySelectorAll(
+    document.querySelectorAll<HTMLTableRowElement>(
       "table.table-hover > tbody > tr:not(.active)",
-    ) as NodeListOf<HTMLTableRowElement>,
+    ),
   );
 
   const classes = classTableRows.map((classTableRow) =>
@@ -112,8 +112,8 @@ function getClass(
   classPropToCol: Map<keyof Class, number>,
 ): Class {
   const classCells = Array.from(
-    classTableRow.querySelectorAll(":scope > td"),
-  ) as HTMLTableCellElement[];
+    classTableRow.querySelectorAll<HTMLTableCellElement>(":scope > td"),
+  );
 
   const subjectCol = classPropToCol.get("subject");
   const subject = subjectCol ? (classCells[subjectCol]?.innerText ?? "") : "";
@@ -198,8 +198,8 @@ function getClassTimes(cell: HTMLTableCellElement | undefined): ClassTime[] {
   }
 
   const classTimeRows = Array.from(
-    cell.querySelectorAll("table > tbody > tr"),
-  ) as HTMLTableRowElement[];
+    cell.querySelectorAll<HTMLTableRowElement>("table > tbody > tr"),
+  );
 
   const hasEmptyFirstCell = !classTimeRows
     .at(0)
@@ -270,6 +270,12 @@ function getClassSession(courseNumber: string): ClassSession {
     default:
       return "Full Year";
   }
+}
+
+function getYear() {
+  const termSelectElement = document.querySelector<HTMLSelectElement>(
+    "select#CurrentTimeTableDisplay",
+  );
 }
 
 function getSchedule(): DraftSchedule {
