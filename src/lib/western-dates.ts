@@ -5,6 +5,7 @@
 
 import {
   addWeeks,
+  endOfDay,
   isFriday,
   isMonday,
   nextFriday,
@@ -12,6 +13,7 @@ import {
   nextThursday,
   previousFriday,
   previousSaturday,
+  startOfDay,
 } from "date-fns";
 
 export type DateRange = {
@@ -23,15 +25,15 @@ export function getFallSemDates(schoolYear: number): DateRange[] {
   const startOfFallSem = getStartOfFallSem(schoolYear);
   const startOfFallReadingWeek = getStartOfFallReadingWeek(schoolYear);
   const beforeReadingWeekRange: DateRange = {
-    startDate: startOfFallSem,
-    endDate: previousFriday(startOfFallReadingWeek),
+    startDate: startOfDay(startOfFallSem),
+    endDate: endOfDay(previousFriday(startOfFallReadingWeek)),
   };
 
   const fallSemClassesResume = nextMonday(addWeeks(startOfFallReadingWeek, 1));
   const endOfFallSem = getEndOfFallSem(schoolYear);
   const afterReadingWeekRange: DateRange = {
-    startDate: fallSemClassesResume,
-    endDate: endOfFallSem,
+    startDate: startOfDay(fallSemClassesResume),
+    endDate: endOfDay(endOfFallSem),
   };
 
   return [beforeReadingWeekRange, afterReadingWeekRange];
@@ -41,8 +43,8 @@ export function getWinterSemDates(schoolYear: number): DateRange[] {
   const startOfWinterSem = getStartOfWinterSem(schoolYear);
   const startOfSpringReadingWeek = getStartOfSpringReadingWeek(schoolYear);
   const beforeReadingWeekRange: DateRange = {
-    startDate: startOfWinterSem,
-    endDate: previousFriday(startOfSpringReadingWeek),
+    startDate: startOfDay(startOfWinterSem),
+    endDate: endOfDay(previousFriday(startOfSpringReadingWeek)),
   };
 
   const winterSemClassesResume = nextMonday(
@@ -50,8 +52,8 @@ export function getWinterSemDates(schoolYear: number): DateRange[] {
   );
   const endOfWinterSem = getEndOfWinterSem(schoolYear);
   const afterReadingWeekRange: DateRange = {
-    startDate: winterSemClassesResume,
-    endDate: endOfWinterSem,
+    startDate: startOfDay(winterSemClassesResume),
+    endDate: endOfDay(endOfWinterSem),
   };
 
   return [beforeReadingWeekRange, afterReadingWeekRange];
