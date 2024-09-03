@@ -18,7 +18,4 @@ function onBackgroundMessage(message: BackgroundMessage) {
   }
 }
 
-// TODO: remove this call from testing
-getScheduleHandler();
-
 browser.runtime.onMessage.addListener(onBackgroundMessage);
