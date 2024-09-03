@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { sendBackgroundMessage } from "./main";
 import type { GetScheduleResponse } from "../content-script/primary/draft-my-schedule";
+import { getFallSemDates, getWinterSemDates } from "~/lib/western-dates";
 
 export async function sendGetScheduleRequest() {
   const activeTabId = await browser.tabs
@@ -25,4 +26,8 @@ export async function sendGetScheduleRequest() {
 export function getScheduleResponseHandler(response: GetScheduleResponse) {
   const schedule = response.schedule;
   console.log({ schedule });
+
+  const schoolYear = schedule.year;
+  const fallSemDates = getFallSemDates(schoolYear);
+  const winterSemDates = getWinterSemDates(schoolYear);
 }

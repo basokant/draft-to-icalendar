@@ -10,10 +10,54 @@ import {
   nextFriday,
   nextMonday,
   nextThursday,
+  previousFriday,
   previousSaturday,
 } from "date-fns";
 
-export function getLabourDay(year: number): Date {
+export type DateRange = {
+  startDate: Date;
+  endDate: Date;
+};
+
+export function getFallSemDates(schoolYear: number): DateRange[] {
+  const startOfFallSem = getStartOfFallSem(schoolYear);
+  const startOfFallReadingWeek = getStartOfFallReadingWeek(schoolYear);
+  const beforeReadingWeekRange: DateRange = {
+    startDate: startOfFallSem,
+    endDate: previousFriday(startOfFallReadingWeek),
+  };
+
+  const fallSemClassesResume = nextMonday(addWeeks(startOfFallReadingWeek, 1));
+  const endOfFallSem = getEndOfFallSem(schoolYear);
+  const afterReadingWeekRange: DateRange = {
+    startDate: fallSemClassesResume,
+    endDate: endOfFallSem,
+  };
+
+  return [beforeReadingWeekRange, afterReadingWeekRange];
+}
+
+export function getWinterSemDates(schoolYear: number): DateRange[] {
+  const startOfWinterSem = getStartOfWinterSem(schoolYear);
+  const startOfSpringReadingWeek = getStartOfSpringReadingWeek(schoolYear);
+  const beforeReadingWeekRange: DateRange = {
+    startDate: startOfWinterSem,
+    endDate: previousFriday(startOfSpringReadingWeek),
+  };
+
+  const winterSemClassesResume = nextMonday(
+    addWeeks(startOfSpringReadingWeek, 1),
+  );
+  const endOfWinterSem = getEndOfWinterSem(schoolYear);
+  const afterReadingWeekRange: DateRange = {
+    startDate: winterSemClassesResume,
+    endDate: endOfWinterSem,
+  };
+
+  return [beforeReadingWeekRange, afterReadingWeekRange];
+}
+
+function getLabourDay(year: number): Date {
   const septemberFirst = new Date(year, 8, 1);
   const labourDay = isMonday(septemberFirst)
     ? septemberFirst
@@ -27,7 +71,7 @@ export function getLabourDay(year: number): Date {
  *
  * Assumption: Thursday after Labour Day, where Labour Day is the first Monday of September
  * */
-export function getStartOfFallSem(schoolYear: number): Date {
+function getStartOfFallSem(schoolYear: number): Date {
   const labourDay = getLabourDay(schoolYear);
   return nextThursday(labourDay);
 }
@@ -47,7 +91,7 @@ function getThanksgiving(year: number): Date {
  *
  * Assumption: week of Thanksgiving, where Thanksgiving is the second Monday of October
  * */
-export function getStartOfFallReadingWeek(schoolYear: number): Date {
+function getStartOfFallReadingWeek(schoolYear: number): Date {
   const thanksgiving = getThanksgiving(schoolYear);
   return previousSaturday(thanksgiving);
 }
@@ -57,7 +101,7 @@ export function getStartOfFallReadingWeek(schoolYear: number): Date {
  *
  * Assumption: Friday 13 weeks after start of Fall semester
  * */
-export function getEndOfFallSem(schoolYear: number): Date {
+function getEndOfFallSem(schoolYear: number): Date {
   const startOfSem = getStartOfFallSem(schoolYear);
   const thirteenWeeksAfterStart = addWeeks(startOfSem, 13);
   const endOfFallSem = isFriday(thirteenWeeksAfterStart)
@@ -72,7 +116,7 @@ export function getEndOfFallSem(schoolYear: number): Date {
  *
  * Assumption: first monday two weeks after December 23rd (start of Winter break)
  * */
-export function getStartOfWinterSem(schoolYear: number): Date {
+function getStartOfWinterSem(schoolYear: number): Date {
   const startOfWinterBreak = new Date(schoolYear, 11, 23);
   const twoWeeksAfterStart = addWeeks(startOfWinterBreak, 2);
   const startOfWinterSem = isMonday(twoWeeksAfterStart)
@@ -97,7 +141,7 @@ function getFamilyDay(year: number): Date {
  *
  * Assumption: week of Family Day, which is the third Monday of February
  * */
-export function getStartOfSpringReadingWeek(schoolYear: number): Date {
+function getStartOfSpringReadingWeek(schoolYear: number): Date {
   const year = schoolYear + 1;
   const familyDay = getFamilyDay(year);
   return previousSaturday(familyDay);
@@ -108,7 +152,7 @@ export function getStartOfSpringReadingWeek(schoolYear: number): Date {
  *
  * Assumption: Friday 12 weeks after start of Winter semester.
  * */
-export function getEndOfWinterSem(schoolYear: number): Date {
+function getEndOfWinterSem(schoolYear: number): Date {
   const startOfWinterSem = getStartOfWinterSem(schoolYear);
   const thirteenWeeksAfterStart = addWeeks(startOfWinterSem, 12);
   const endOfWinterSem = isFriday(thirteenWeeksAfterStart)
