@@ -47,7 +47,7 @@ export type ClassTime = {
   location: string | null;
 };
 
-type Class = {
+export type Class = {
   subject: string;
   courseNumber: string;
   session: ClassSession;
@@ -225,11 +225,15 @@ function getClassTime(row: HTMLTableRowElement): ClassTime {
 
   const classTimeCells = Array.from(row.querySelectorAll("td"));
 
-  const shortDays = classTimeCells[0]?.innerText
-    .replace(/\s/g, "")
-    ?.split("") as ShortDayOfWeek[] | undefined;
+  const shortDaysString = classTimeCells[0]?.innerText.trim();
+  const shortDays = shortDaysString?.split(/\s+/g) as
+    | ShortDayOfWeek[]
+    | undefined;
+
   const days: DayOfWeek[] =
-    shortDays?.map((day: ShortDayOfWeek) => shortDayToDay[day]) ?? [];
+    shortDays
+      ?.map((day: ShortDayOfWeek) => shortDayToDay[day])
+      .filter((day) => !!day) ?? [];
 
   const times = classTimeCells[1]?.innerText.trim().split(" - ") ?? [];
   const startTime = times[0] ?? "";
