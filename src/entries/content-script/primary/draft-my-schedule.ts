@@ -267,12 +267,20 @@ function getClassSession(courseNumber: string): ClassSession {
   switch (suffix) {
     case "A":
     case "F":
+    case "W":
       return "Fall";
     case "B":
     case "G":
+    case "X":
       return "Winter";
-    default:
+    case "E":
+    case "Y":
+    case "Z":
       return "Full Year";
+    default:
+      throw new Error(
+        `Course suffix ${suffix} is not supported. A/B, F/G, W/X, E, and Y/Z course suffixes supported currently.`,
+      );
   }
 }
 
@@ -285,9 +293,16 @@ function getYear() {
     Array.from(termSelectElement?.selectedOptions ?? []).at(
       termSelectElement?.selectedIndex ?? 0,
     )?.innerText ?? "";
-  const year = Number(term?.trim().split(" ").at(-1));
+  const [session, year] = term?.trim().split(" ");
 
-  return year;
+  // TODO: support summer term later.
+  if (session !== "Fall/Winter") {
+    throw new Error(
+      `Session ${session} is not supported. Fall/Winter only supported currently.`,
+    );
+  }
+
+  return Number(year);
 }
 
 function getSchedule(): DraftSchedule {
