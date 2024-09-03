@@ -19,6 +19,9 @@ import {
 } from "ical-generator";
 import { getDay, parse, setDay, type Day } from "date-fns";
 
+const DAY_FORMAT = "EEEE";
+const TWELVE_HOUR_TIME_FORMAT = "h:m a";
+
 export async function sendGetScheduleRequest() {
   const activeTabId = await browser.tabs
     .query({
@@ -79,18 +82,26 @@ function createClassTimeEvent(
   const summary = `${cl.subject} ${cl.courseNumber} ${cl.component}`;
   const description = `${cl.description} ${cl.component} for the ${cl.session}`;
   const days = ct.days.map((day) => {
-    return getDay(parse(day, "EEEE", new Date()));
+    return getDay(parse(day, DAY_FORMAT, new Date()));
   });
+  const weekdays = days.map(getWeekday);
 
   const firstDay = days[0] ?? 0;
-
   const firstOccurrenceDate = setDay(startDate, firstDay, {
     weekStartsOn: getDay(startDate) as Day,
   });
-  const startDateTime = parse(ct.startTime, "h:m a", firstOccurrenceDate);
-  const endDateTime = parse(ct.endTime, "h:m a", firstOccurrenceDate);
 
-  const weekdays = days.map(getWeekday);
+  const startDateTime = parse(
+    ct.startTime,
+    TWELVE_HOUR_TIME_FORMAT,
+    firstOccurrenceDate,
+  );
+
+  const endDateTime = parse(
+    ct.endTime,
+    TWELVE_HOUR_TIME_FORMAT,
+    firstOccurrenceDate,
+  );
 
   return {
     summary,
@@ -119,16 +130,16 @@ function createClassTimeEvents(
 
 function createCoursesCalendar(schedule: DraftSchedule): ICalCalendar {
   const schoolYear = schedule.year;
-  const fallSemDates = getFallSemDates(schoolYear);
   const fallClasses = schedule.classes.filter(
     (cl) => cl.session === "Fall" || cl.session === "Full Year",
   );
+  const fallSemDates = getFallSemDates(schoolYear);
   const fallEvents = createClassTimeEvents(fallClasses, fallSemDates);
 
-  const winterSemDates = getWinterSemDates(schoolYear);
   const winterClasses = schedule.classes.filter(
     (cl) => cl.session === "Winter" || cl.session === "Full Year",
   );
+  const winterSemDates = getWinterSemDates(schoolYear);
   const winterEvents = createClassTimeEvents(winterClasses, winterSemDates);
 
   const calendar = ical({ name: `Courses Fall/Winter ${schoolYear}` });
